@@ -58,7 +58,17 @@ namespace Framework
                     continue;
                 }
                 object instance = CreateInstance(t);
+                HandleCanSetContext(instance);
                 _iocContainer.Add(identityAttribute.IdentityType, instance);
+            }
+        }
+
+        private void HandleCanSetContext(object instance)
+        {
+            ICanSetContext canSetContext = instance as ICanSetContext;
+            if (canSetContext != null)
+            {
+                canSetContext.SetContext(this); 
             }
         }
         private object CreateInstance(Type type)
@@ -216,6 +226,7 @@ namespace Framework
                 //注入依赖 + 调用初始化
                 HandleIdentities();
                 Debug.Log($"-------------- Context 执行完毕, 用时: {(DateTime.Now - startTime).Milliseconds} ms --------------");
+                Debug.Log(_iocContainer);
                 _hasStarted = true;
             }
             

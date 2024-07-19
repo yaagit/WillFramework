@@ -57,6 +57,7 @@ namespace Framework
         public override string ToString()
         {
             StringBuilder result = new();
+            result.Append("-------------------------- IOC Container --------------------------\n");
             foreach (KeyValuePair<IdentityType, Dictionary<Type, object>> outerKv in _identityIoc)
             {
                 result.Append($"{outerKv.Key}:").Append("\n\t");
@@ -66,6 +67,7 @@ namespace Framework
                 }
                 result.Append("\n");
             }
+            result.Append("-------------------------------------------------------------------");
             return result.ToString();
         }
     }
