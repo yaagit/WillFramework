@@ -1,6 +1,4 @@
-﻿using Framework.Tiers;
-
-namespace Framework.CommandManager
+﻿namespace WillFramework.CommandManager
 {
     /// <summary>
     /// </summary>

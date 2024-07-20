@@ -1,4 +1,4 @@
-﻿namespace Framework.Events
+﻿namespace WillFramework.Events
 {
     public delegate void RmcEventHandler<T, U>(T oldValue, U newValue);
     

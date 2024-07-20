@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Framework.Events
+namespace WillFramework.Events
 {
     public class ObservableOnDiff<T> : BaseObservable<T> where T : IEquatable<T>
     {

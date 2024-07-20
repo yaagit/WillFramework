@@ -1,8 +1,6 @@
-﻿using Framework.Rules;
-using Framework.Tiers;
-using Framework.Tiers.Initialize;
+﻿using WillFramework.Rules;
 
-namespace Framework.CommandManager
+namespace WillFramework.CommandManager
 {
     /// <summary>
     /// </summary>

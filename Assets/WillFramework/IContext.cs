@@ -1,7 +1,6 @@
-﻿using Framework.CommandManager;
-using Framework.Rules;
+﻿using WillFramework.CommandManager;
 
-namespace Framework
+namespace WillFramework
 {
     /// <summary>
     /// </summary>

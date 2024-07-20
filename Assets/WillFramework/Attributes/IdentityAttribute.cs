@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Framework.Attributes.Injection
+namespace WillFramework.Attributes
 {
     /// <summary>
     /// 通用类型的 Attribute

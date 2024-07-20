@@ -1,16 +1,15 @@
-﻿using Framework.Attributes.Injection;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
+using WillFramework.Attributes;
 
-namespace Framework.Tiers
+namespace WillFramework.Tiers
 {
     public class BaseView<T> : MonoBehaviour, IView where T : BaseView<T>
     {
-        
-        
         void OnDestroy()
         {
-            Context.IocContainer.Remove(IdentityType.View, this);
+            IContext context = (this as IView).Context;
+            context.IocContainer.Remove(IdentityType.View, this);
+            context.CommandContainer.OnAutoCheckoutListenerAction.Invoke(typeof(T));
             _OnDestroy();
         }
         //留给子类去实现
@@ -19,6 +18,6 @@ namespace Framework.Tiers
             
         }
 
-        public IContext Context { get; set; }
+        IContext IView.Context { get; set; }
     }
 }

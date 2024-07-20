@@ -1,4 +1,4 @@
-﻿namespace Framework.Rules
+﻿namespace WillFramework.Rules
 {
     /// <summary>
     /// </summary>

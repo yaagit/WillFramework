@@ -1,4 +1,4 @@
-﻿namespace Framework.Tiers.Initialize
+﻿namespace WillFramework.Initialize
 {
     /// <summary>
     /// </summary>

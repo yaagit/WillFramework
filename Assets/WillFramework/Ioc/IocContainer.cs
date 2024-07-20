@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Framework.Attributes.Injection;
-using Framework.Tiers;
+using WillFramework.Attributes;
 
-namespace Framework
+namespace WillFramework
 {
     /// <summary>
     /// </summary>
@@ -42,10 +40,6 @@ namespace Framework
         {
             if (_identityIoc.TryGetValue(identityType, out Dictionary<Type, object> value))
             {
-                // if (value.ContainsValue(instance))
-                // {
-                //     value.Remove(instance.GetType());
-                // }
                 value.Remove(instance.GetType());
                 if (value.Count == 0)
                 {

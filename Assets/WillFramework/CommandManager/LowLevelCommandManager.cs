@@ -1,8 +1,7 @@
-﻿using Framework.Attributes.Injection;
-using Framework.CommandManager;
-using Framework.Rules;
+﻿using WillFramework.Attributes;
+using WillFramework.Rules;
 
-namespace Framework.CommandManager
+namespace WillFramework.CommandManager
 {
     [Identity]
     public class LowLevelCommandManager : BaseCommandManager, ICanListenCommand

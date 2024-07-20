@@ -1,4 +1,4 @@
-﻿namespace Framework.Events
+﻿namespace WillFramework.Events
 {
     public class EventImpl<T, U> : IEvent<T, U>
     {

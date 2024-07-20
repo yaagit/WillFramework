@@ -1,4 +1,4 @@
-﻿namespace Framework.CommandManager
+﻿namespace WillFramework.CommandManager
 {
     /// <summary>
     /// </summary>

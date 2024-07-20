@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Framework.Events
+namespace WillFramework.Events
 {
     /// <summary>
     /// </summary>

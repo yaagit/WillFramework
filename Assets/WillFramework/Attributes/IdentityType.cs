@@ -1,4 +1,4 @@
-﻿namespace Framework.Attributes.Injection
+﻿namespace WillFramework.Attributes
 {
     /// <summary>
     /// </summary>

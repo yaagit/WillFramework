@@ -1,4 +1,4 @@
-﻿namespace Framework.Tiers
+﻿namespace WillFramework.Tiers
 {
     public interface IView
     {

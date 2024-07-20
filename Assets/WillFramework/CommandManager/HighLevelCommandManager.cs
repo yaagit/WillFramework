@@ -1,9 +1,7 @@
-﻿using Framework.Attributes.Injection;
-using Framework.CommandManager;
-using Framework.Rules;
-using Framework.Tiers;
+﻿using WillFramework.Attributes;
+using WillFramework.Rules;
 
-namespace Framework.CommandManager
+namespace WillFramework.CommandManager
 {
     [Identity]
     public class HighLevelCommandManager : BaseCommandManager, ICanInvokeCommand
