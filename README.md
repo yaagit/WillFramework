@@ -15,7 +15,7 @@ ReportAction 作为专供 Service，View 使用的事件委托类，提供的功
 ### View
 View 角色比较特殊，通常要继承 Monobehavior，也就说明它的生命周期无法被 WillFramework 掌控。在使用 WillFramework 的过程中也要时刻记得这个差异，不要把初始化框架类的代码放到 Start 函数里执行，因为你无法预料它执行的时机。WillFramework 提供了 BaseView<T>，默认继承了 Monobehavior，View 通过继承 BaseView 能够获得被动事件注销的功能。View 角色需要和 Unity 对接后传入 Application 的启动参数，这样才会被纳入 Ioc 容器的管理。
 ### Attributes
-WillFramework 提供了很多强语义化的注解，[View], [Controller], [Service], [Model], [Identity]，其中 Identity 为原始类型，打上该注解的类的生命周期会受到 Ioc 容器的管理，用户无须操心对象的单例创建，回收等问题。在需要继承 Monobehavior 的情况下，不建议用户使用 [View]，因为 View 角色需要和 Unity 对接传入。 
+WillFramework 提供了很多强语义化的注解，[View], [Controller], [Service], [Model], [Identity]，其中 Identity 为原始类型，打上该注解的类的生命周期会受到 Ioc 容器的管理，默认模式为单例模式，因此用户无须操心对象的单例创建，回收等问题。在需要继承 Monobehavior 的情况下，不建议用户使用 [View]，因为 View 角色需要和 Unity 对接传入。 
 ### 启动自动化代码
 WillFramework 强烈建议把初始化代码放进 AutoInitialize 方法里执行，尤其是初始化受 IOC 容器托管的引用。
 ### 注入权限管理
