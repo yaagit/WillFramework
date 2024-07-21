@@ -4,14 +4,14 @@
 ### 角色关系
 通常情况下，WillFramework 具有四个角色：Controller，View，Service，Model。除了 Controller，其他三个两两互相解耦，无法互相引用。Controller 作为总的调度中心可以引用所有的 View，Service，Model。它们之间通过 RepotAction 和 CommandManger 来进行通讯，具体通讯关系如下所示：
 
-![image](/Assets/WillFramework%20Images/WillFramework%20%E6%A1%86%E6%9E%B6%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB%E5%9B%BE%200001.png)
+![image](/Assets/WillFramework%20Images/WillFramework001.png)
 #### CommandManager
 CommandManager 作为框架的受 Ioc 容器托管的内置对象，拥有两个级别：HighLevelCommandManager、LowLevelCommandManager。HighLevelCommandManager 只能够发布和执行命令，LowLevelCommandManager 只能监听命令。每个角色的引用权限不一样，Controller 只能够引用 HighLevelCommandManager，View、Service 只能引用 LowLevelCommandManager，Model 无法引用任何类型的 CommandManager。
 #### ReportAction
 ReportAction 作为专供 Service，View 使用的事件委托类，提供的功能很简单，就是委托给 Controller。由于 Model，Service，View 三个角色无法互相引用，因此它也无法委托给除了 Controller 外的其他角色。
 ### 类图关系
 （黄色块为用户的自定义类型）
-![image](/Assets/WillFramework%20Images/WillFramework%20%E7%B1%BB%E5%9B%BE.png)
+![image](/Assets/WillFramework%20Images/WillFramework002.png)
 ### View
 View 角色比较特殊，通常要继承 Monobehavior，也就说明它的生命周期无法被 WillFramework 掌控。在使用 WillFramework 的过程中也要时刻记得这个差异，不要把初始化框架类的代码放到 Start 函数里执行，因为你无法预料它执行的时机。WillFramework 提供了 BaseView<T>，默认继承了 Monobehavior，View 通过继承 BaseView 能够获得被动事件注销的功能。View 角色需要和 Unity 对接后传入 Application 的启动参数，这样才会被纳入 Ioc 容器的管理。
 ### Attributes
