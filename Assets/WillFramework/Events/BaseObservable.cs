@@ -15,12 +15,12 @@
         public abstract T Value { get; set; }
         
         
-        public void AddListener(RmcEventHandler<T, T> call, T oldValue = default(T), T newValue = default(T))
+        public void AddListener(EventHandler<T, T> call, T oldValue = default(T), T newValue = default(T))
         {
             OnValueChanged.AddListener(call, false, oldValue, newValue);
         }
 
-        public void RemoveListener(RmcEventHandler<T, T> call)
+        public void RemoveListener(EventHandler<T, T> call)
         {
             OnValueChanged.RemoveListener(call);
         }
