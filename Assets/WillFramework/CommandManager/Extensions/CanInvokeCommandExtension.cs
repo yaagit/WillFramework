@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using WillFramework.Command;
 using WillFramework.Rules;
 
 namespace WillFramework.CommandManager.Extensions

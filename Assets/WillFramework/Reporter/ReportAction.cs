@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WillFramework.Events
+namespace WillFramework.Reporter
 {
     /// <summary>
     /// </summary>

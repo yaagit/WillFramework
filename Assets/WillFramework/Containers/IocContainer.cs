@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using WillFramework.Attributes;
+using WillFramework.Attributes.Types;
 
-namespace WillFramework
+namespace WillFramework.Containers
 {
     /// <summary>
     /// </summary>

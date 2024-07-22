@@ -1,4 +1,6 @@
-﻿namespace WillFramework.Events
+﻿using WillFramework.Events;
+
+namespace WillFramework.Observable
 {
     public abstract class BaseObservable<T>
     {

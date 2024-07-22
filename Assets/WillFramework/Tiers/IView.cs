@@ -1,10 +1,9 @@
-﻿namespace WillFramework.Tiers
+﻿using WillFramework.Rules;
+
+namespace WillFramework.Tiers
 {
-    public interface IView
+    public interface IView : ICanGetContext, ICanSetContext
     {
-        IContext Context {
-            get;
-            set;
-        }
+
     }
 }

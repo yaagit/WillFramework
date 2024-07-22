@@ -1,4 +1,4 @@
-﻿namespace WillFramework.Attributes
+﻿namespace WillFramework.Attributes.Types
 {
     /// <summary>
     /// </summary>

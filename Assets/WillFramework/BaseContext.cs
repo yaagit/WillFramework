@@ -4,7 +4,9 @@ using System.Reflection;
 using UnityEngine;
 using WillFramework.Attributes;
 using WillFramework.Attributes.Injection;
+using WillFramework.Attributes.Types;
 using WillFramework.CommandManager;
+using WillFramework.Containers;
 using WillFramework.Rules;
 using WillFramework.Tiers;
 using WillFramework.Initialize;
@@ -214,7 +216,7 @@ namespace WillFramework
                 {
                     foreach (IView v in views)
                     {
-                        v.Context = this;
+                        v.SetContext(this);;
                         IocContainer.Add(IdentityType.View, v);
                     }
                 }

@@ -1,4 +1,4 @@
-﻿namespace WillFramework.Events
+﻿namespace WillFramework.Observable
 {
     public class ObservableWhatever<T> : BaseObservable<T>
     {

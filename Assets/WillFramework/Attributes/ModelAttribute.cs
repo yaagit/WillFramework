@@ -1,4 +1,5 @@
 ﻿using System;
+using WillFramework.Attributes.Types;
 
 namespace WillFramework.Attributes
 {
