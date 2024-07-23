@@ -20,8 +20,3 @@ WillFramework 提供了很多强语义化的注解，[View], [Controller], [Serv
 WillFramework 强烈建议把初始化代码放进 AutoInitialize 方法里执行，尤其是初始化受 IOC 容器托管的引用。
 ### 注入权限管理
 WillFramework 提供了可高度定制的注入权限方式，但是初期不建议用户修改角色之间的注入权限，以免过度违背 MVC 框架的定义。
-### 使用方式
-用户先新建一个类，让它继承 BaseContext，为了方便教学，我们暂定这个名字为 CustomizedContext。
-接下来，我们再新建一个类 CustomizedApplication，这是一个 Unity 脚本组件，我们让它挂在一个 Empty Object 下面。然后提供项目所有的 View 角色字段（通过 Unity 拖拽的方式将其引入）。在 Start 方法里，我们通过 CustomizedContext.Instance 来引用 Context 的单例对象，将所有的 View 角色参数引用传入 StartWithViews 方法。
-
-BINGO！恭喜你，成功启动了 WillFramework！
