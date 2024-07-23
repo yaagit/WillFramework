@@ -7,7 +7,7 @@ namespace WillFramework.Containers
 {
     /// <summary>
     /// </summary>
-    public class IocContainer
+    public class IocContainer : IDisposable
     {
         private Dictionary<IdentityType, Dictionary<Type, object>> _identityIoc;
         
@@ -63,6 +63,11 @@ namespace WillFramework.Containers
             }
             result.Append("-------------------------------------------------------------------");
             return result.ToString();
+        }
+
+        public void Dispose()
+        {
+            _identityIoc.Clear();
         }
     }
 }

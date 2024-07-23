@@ -15,7 +15,7 @@ namespace WillFramework
 {
     /// <summary>
     /// </summary>
-    public class BaseContext<T> : IContext where T : BaseContext<T>
+    public class BaseContext<T> : IContext, IDisposable where T : BaseContext<T>
     {
         private bool _hasStarted = false; //防止重复启动
         //IOC 容器
@@ -45,9 +45,8 @@ namespace WillFramework
         #endregion
         
         #region 扫描类上面的注解, 添加进相应的 container
-        private void ScanIdentities()
+        private void ScanIdentitiesByAssembly(Assembly assembly)
         {
-            Assembly assembly = typeof(T).Assembly;
             Type[] types = assembly.GetTypes();
             foreach (var t in types)
             {
@@ -148,7 +147,7 @@ namespace WillFramework
             }
         }
         
-        public void InjectByPermission(object instance, PermissionFlags permissions)
+        private void InjectByPermission(object instance, PermissionFlags permissions)
         {
             Type type = instance.GetType();
             FieldInfo[] fieldInfos = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.NonPublic |
@@ -221,14 +220,36 @@ namespace WillFramework
                     }
                 }
                 //扫描并添加进 IOC 容器
-                ScanIdentities();
+                Assembly assembly = typeof(T).Assembly;
+                ScanIdentitiesByAssembly(assembly);
+                Assembly localAssembly = Assembly.GetAssembly(typeof(BaseContext<T>));
+                ScanIdentitiesByAssembly(localAssembly);
                 //注入依赖 + 调用初始化
                 HandleIdentities();
                 Debug.Log($"-------------- Context 执行完毕, 用时: {(DateTime.Now - startTime).Milliseconds} ms --------------");
                 Debug.Log(_iocContainer);
                 _hasStarted = true;
             }
-            
+        }
+        // 说不定 Unity 创建对象的时候, 把脚本中的一些字段都设置了 ----
+        
+        // // todo 在游戏运行过程中,有一些 view 是生成的, 也需要手动添加进去 -----------  (干脆在 BaseView 里重写这个方法得了)
+        // // 1.先在 IOC Container 中找到这个类型的副本, 可以复制, 找不到是不可能的, 因为它始终有个 prefab, prefab 要有脚本组件才能引入进来
+        // public void AddSomeViewsOnRuntime(params IView[] views)
+        // {
+        //     if (views.Length != 0)
+        //     {
+        //         foreach (IView v in views)
+        //         {
+        //             v.SetContext(this);;
+        //             IocContainer.Add(IdentityType.View, v);
+        //         }
+        //     }
+        // }
+        public void Dispose()
+        {
+            _commandContainer?.Dispose();
+            _iocContainer?.Dispose();
         }
     }
     [Flags]
@@ -244,10 +265,10 @@ namespace WillFramework
         InjectLowLevelCommandManager = InjectView << 5,
         #endregion
     }
-    static class PermissionForIdentities
+    internal static class PermissionForIdentities
     {
         public static PermissionFlags Controller = PermissionFlags.InjectView | PermissionFlags.InjectService | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
-        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectLowLevelCommandManager;
+        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectLowLevelCommandManager | PermissionFlags.InjectModel;
         public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectLowLevelCommandManager;
         public static PermissionFlags Model = PermissionFlags._None;
         public static PermissionFlags Identity = PermissionFlags._None;

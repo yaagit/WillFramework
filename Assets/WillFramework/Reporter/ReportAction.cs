@@ -23,4 +23,24 @@ namespace WillFramework.Reporter
             _action?.Invoke(p);
         }
     }
+    
+    public class ReportAction
+    {
+        private Action _action;
+
+        public void AddListener(Action action)
+        {
+            _action += action;
+        }
+
+        public void RemoveListener(Action action)
+        {
+            _action -= action;
+        }
+
+        public void Trigger()
+        {
+            _action?.Invoke();
+        }
+    }
 }
