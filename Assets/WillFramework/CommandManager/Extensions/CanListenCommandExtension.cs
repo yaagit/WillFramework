@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using WillFramework.Command;
 using WillFramework.Containers;
 using WillFramework.Rules;
@@ -16,10 +17,10 @@ namespace WillFramework.CommandManager.Extensions
             {
                 ErrorWarning();
             }
-            self.GetContext().CommandContainer.AddCommandListener(user.GetType(), del);
+            self.GetContext().CommandContainer.AddCommandListener(user, del);
         }
         
-        
+        [Obsolete("Deprecated Method")]
         public static void AddCommandListener<T>(this ICanListenCommand self, CommandContainer.InvokeCommandDelegate<T> del) where T : ICommand
         {
             if (self == null)
@@ -29,7 +30,7 @@ namespace WillFramework.CommandManager.Extensions
             self.GetContext().CommandContainer.AddCommandListener(del);
             
         }
-        
+        [Obsolete("Deprecated Method")]
         public static void RemoveCommandListener<T>(this ICanListenCommand self, CommandContainer.InvokeCommandDelegate<T> del) where T : ICommand
         {
             if (self == null)

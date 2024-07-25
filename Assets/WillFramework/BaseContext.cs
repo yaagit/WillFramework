@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 using WillFramework.Attributes;
 using WillFramework.Attributes.Injection;
@@ -24,6 +26,18 @@ namespace WillFramework
         //Command 容器
         private CommandContainer _commandContainer = new CommandContainer();
         public CommandContainer CommandContainer { get => _commandContainer; }
+        
+        public async Task InitializeViewAsync(IView view)
+        {
+            await Task.Run(() =>
+            {
+                view.SetContext(Instance);
+                IocContainer.Add(IdentityType.View, view);
+                PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(IdentityType.View);
+                InjectByPermission(view, permissions);
+                HandleAutoInitialize(view);
+            });
+        }
 
         #region 获取的实例在任何情况下都是单例的
         private static readonly Lazy<T> _lazyCreateInstance = new(() =>
@@ -94,33 +108,40 @@ namespace WillFramework
 
         private void HandleIdentities()
         {
-            Dictionary<IdentityType, Dictionary<Type, object>> identityIoc  = IocContainer.IdentityIoc;
-            foreach (KeyValuePair<IdentityType, Dictionary<Type, object>> outerKv in identityIoc)
+            Dictionary<IdentityType, Dictionary<Type, List<object>>> identityIoc  = IocContainer.IdentityIoc;
+            foreach (KeyValuePair<IdentityType, Dictionary<Type, List<object>>> outerKv in identityIoc)
             {
                 IdentityType identityType = outerKv.Key;
 
-                foreach (KeyValuePair<Type,  object> innerKv in outerKv.Value)
+                foreach (KeyValuePair<Type,  List<object>> innerKv in outerKv.Value)
                 {
-                    object instance = innerKv.Value;
-                    PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(identityType);
-                    //----- 依据权限注入
-                    InjectByPermission(instance, permissions);
-                    //----- 初始化
-                    IAutoInitialize init = instance as IAutoInitialize;
-                    if (init != null)
+                    List<object> objectList = innerKv.Value;
+                    foreach (var instance in objectList)
                     {
-                        init.AutoInitialize();
+                        PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(identityType);
+                        //----- 依据权限注入
+                        InjectByPermission(instance, permissions);
+                        //----- 初始化
+                        HandleAutoInitialize(instance);
                     }
                 }
                 
             }
             
         }
+
+        private void HandleAutoInitialize(object instance)
+        {
+            if (instance is IAutoInitialize init)
+            {
+                init.AutoInitialize();
+            }
+        }
         private IdentityType GetIdentityTypeByType(Type type)
         {
-            foreach(KeyValuePair<IdentityType, Dictionary<Type, object>> kv in IocContainer.IdentityIoc)
+            foreach(KeyValuePair<IdentityType, Dictionary<Type, List<object>>> kv in IocContainer.IdentityIoc)
             {
-                if (kv.Value.TryGetValue(type, out object instance))
+                if (kv.Value.TryGetValue(type, out List<object> instanceList))
                 {
                     return kv.Key;
                 }
@@ -130,11 +151,22 @@ namespace WillFramework
 
         private void SetInstanceField(IdentityType fieldIdentityType, Type fieldType, object instance, FieldInfo f)
         {
-            if (IocContainer.IdentityIoc.TryGetValue(fieldIdentityType, out Dictionary<Type, object> dic))
+            if (IocContainer.IdentityIoc.TryGetValue(fieldIdentityType, out Dictionary<Type, List<object>> dic))
             {
-                if (dic.TryGetValue(fieldType, out object fieldInstance))
+                if (dic.TryGetValue(fieldType, out List<object> fieldInstanceList))
                 {
-                    f.SetValue(instance, fieldInstance);
+                    if (fieldType.IsSubclassOf(typeof(BaseView)) && _hasStarted)
+                    {
+                        //运行时创建的 View
+                        // todo ----------- 
+                        Debug.Log("运行时创建的 View 正在设置其他 View 字段引用...");
+                        f.SetValue(instance, fieldInstanceList.First());
+                    }
+                    else
+                    {
+                        //这里的操作不涉及运行时创建的 View
+                        f.SetValue(instance, fieldInstanceList.First());
+                    }
                 }
             }
         }
@@ -180,12 +212,6 @@ namespace WillFramework
                         SetInstanceField(fieldIdentityType, fieldType, instance, f);
                         continue;
                     }
-                    if (fieldIdentityType == IdentityType.Controller)
-                    {
-                        ValidatePermissions(permissions, PermissionFlags.InjectController, type, fieldIdentityType);
-                        SetInstanceField(fieldIdentityType, fieldType, instance, f);
-                        continue;
-                    }
 
                     if (fieldIdentityType == IdentityType.Identity)
                     {
@@ -196,6 +222,10 @@ namespace WillFramework
                         if (fieldType == typeof(HighLevelCommandManager) && !permissions.HasFlag(PermissionFlags.InjectHighLevelCommandManager))
                         {
                             throw new Exception($"{type.FullName} 不允许注入 {nameof(HighLevelCommandManager)} 类型字段");
+                        }
+                        if (fieldType == typeof(CommandManager.CommandManager) && !permissions.HasFlag(PermissionFlags.InjectCommandManager))
+                        {
+                            throw new Exception($"{type.FullName} 不允许注入 {nameof(CommandManager)} 类型字段");
                         }
                         SetInstanceField(fieldIdentityType, fieldType, instance, f);
                         continue;
@@ -215,7 +245,7 @@ namespace WillFramework
                 {
                     foreach (IView v in views)
                     {
-                        v.SetContext(this);;
+                        v.SetContext(Instance);;
                         IocContainer.Add(IdentityType.View, v);
                     }
                 }
@@ -231,21 +261,6 @@ namespace WillFramework
                 _hasStarted = true;
             }
         }
-        // 说不定 Unity 创建对象的时候, 把脚本中的一些字段都设置了 ----
-        
-        // // todo 在游戏运行过程中,有一些 view 是生成的, 也需要手动添加进去 -----------  (干脆在 BaseView 里重写这个方法得了)
-        // // 1.先在 IOC Container 中找到这个类型的副本, 可以复制, 找不到是不可能的, 因为它始终有个 prefab, prefab 要有脚本组件才能引入进来
-        // public void AddSomeViewsOnRuntime(params IView[] views)
-        // {
-        //     if (views.Length != 0)
-        //     {
-        //         foreach (IView v in views)
-        //         {
-        //             v.SetContext(this);;
-        //             IocContainer.Add(IdentityType.View, v);
-        //         }
-        //     }
-        // }
         public void Dispose()
         {
             _commandContainer?.Dispose();
@@ -263,13 +278,14 @@ namespace WillFramework
         #region CommandManager 细化
         InjectHighLevelCommandManager = InjectView << 4,
         InjectLowLevelCommandManager = InjectView << 5,
+        InjectCommandManager = InjectView << 6,
         #endregion
     }
     internal static class PermissionForIdentities
     {
-        public static PermissionFlags Controller = PermissionFlags.InjectView | PermissionFlags.InjectService | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
-        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectLowLevelCommandManager | PermissionFlags.InjectModel;
-        public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectLowLevelCommandManager;
+        // public static PermissionFlags Controller = PermissionFlags.InjectView | PermissionFlags.InjectService | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
+        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectCommandManager | PermissionFlags.InjectModel | PermissionFlags.InjectService;
+        public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectModel;
         public static PermissionFlags Model = PermissionFlags._None;
         public static PermissionFlags Identity = PermissionFlags._None;
 
@@ -277,8 +293,8 @@ namespace WillFramework
         {
             switch (identityType)
             {
-                case IdentityType.Controller:
-                    return Controller;
+                // case IdentityType.Controller:
+                //     return Controller;
                 case IdentityType.View:
                     return View;
                 case IdentityType.Service:

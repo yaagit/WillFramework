@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using WillFramework.Command;
 using WillFramework.Initialize;
 
@@ -9,8 +10,6 @@ namespace WillFramework.Containers
     /// </summary>
     public class CommandContainer : IDisposable, IInitialize
     {
-        // public static Dictionary<Type, Dictionary<Type, List<Delegate>>> AutoCheckoutListenerContainer = new();
-        
         //两个委托一个带泛型(公开),一个不带泛型(私用), 这是因为 Dictionary<TKey, TValue> 只能确定两个泛型, 无法确定第三个泛型
         //公开的泛型在 AddCommandListener 那里需要包装一下, 用私用的泛型包着公开的, 大肠包小肠 
         public delegate void InvokeCommandDelegate<T>(T t) where T : ICommand;
@@ -20,10 +19,11 @@ namespace WillFramework.Containers
         //以方法为维度查重,防止事件被重复调用
         private Dictionary<Delegate, InvokeCommandDelegate> _commandDelegatesLookup = new();
         //自动注销器
-        private Dictionary<Type, Dictionary<Type, List<Delegate>>> AutoCheckoutListenerContainer = new();
+        // private Dictionary<Type, Dictionary<Type, List<Delegate>>> AutoCheckoutListenerContainer = new();
+        private Dictionary<object, Dictionary<Type, List<Delegate>>> AutoCheckoutListenerContainer = new();
         
-        public Action<Type> OnAutoCheckoutListenerAction;
-        
+        public Action<object> OnAutoCheckoutListenerAction;
+
         public CommandContainer()
         {
             Initialize();
@@ -33,10 +33,10 @@ namespace WillFramework.Containers
 
             OnAutoCheckoutListenerAction += OnAutoCheckout;
         }
-
-        private void OnAutoCheckout(Type userType)
+        
+        private void OnAutoCheckout(object user)
         {
-            if (AutoCheckoutListenerContainer.TryGetValue(userType, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
+            if (AutoCheckoutListenerContainer.TryGetValue(user, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
             {
                 foreach (KeyValuePair<Type, List<Delegate>> kv in commandTypeWithDelegates)
                 {
@@ -48,9 +48,26 @@ namespace WillFramework.Containers
                     }
                 }
             }
-
-            AutoCheckoutListenerContainer.Remove(userType);
+        
+            AutoCheckoutListenerContainer.Remove(user);
         }
+        // private void OnAutoCheckout(Type userType)
+        // {
+        //     if (AutoCheckoutListenerContainer.TryGetValue(userType, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
+        //     {
+        //         foreach (KeyValuePair<Type, List<Delegate>> kv in commandTypeWithDelegates)
+        //         {
+        //             Type commandType = kv.Key;
+        //             List<Delegate> userDelegates = kv.Value;
+        //             foreach (var del in userDelegates)
+        //             {
+        //                 RemoveCommandListenerImpl(commandType, del);
+        //             }
+        //         }
+        //     }
+        //
+        //     AutoCheckoutListenerContainer.Remove(userType);
+        // }
 
         /// <summary>
         /// 一个 Command 类型对应一个委托对象, Command 只是个包含参数且继承了 ICommand 的普通实体类
@@ -99,20 +116,21 @@ namespace WillFramework.Containers
         /// <summary>
         /// 添加 Listener + 添加进可以监听事件来注销的注销器
         /// </summary>
-        public void AddCommandListener<T>(Type userType, InvokeCommandDelegate<T> del) where T : ICommand
+        public void AddCommandListener<T>(object user, InvokeCommandDelegate<T> del) where T : ICommand
         {
             bool added = AddCommandListenerImpl(del);
             
             if (added)
             {
-                AddToAutoCheckoutContainerImpl(userType, typeof(T), del);
+                AddToAutoCheckoutContainerImpl(user, typeof(T), del);
             }
         }
-
+        
+        //todo 保存进去的类型应该是 Dictionary<object, Dictionary<Type, List<Delegate>>>  ===>  object, CommandType, List<Delegate>
         //添加进注销器
-        public void AddToAutoCheckoutContainerImpl<T>(Type userType, Type commandType, InvokeCommandDelegate<T> del) where T : ICommand
+        public void AddToAutoCheckoutContainerImpl<T>(object user, Type commandType, InvokeCommandDelegate<T> del) where T : ICommand
         {
-            if (AutoCheckoutListenerContainer.TryGetValue(userType, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
+            if (AutoCheckoutListenerContainer.TryGetValue(user, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
             {
                 if (commandTypeWithDelegates.TryGetValue(commandType, out List<Delegate> userDelegates))
                 {
@@ -127,11 +145,33 @@ namespace WillFramework.Containers
             else
             {
                 List<Delegate> newUserDelegates = new List<Delegate>() {del};
-                Dictionary<Type, List<Delegate>> newCommandTypeWithDelegates = new();
-                newCommandTypeWithDelegates.Add(commandType, newUserDelegates);
-                AutoCheckoutListenerContainer.Add(userType, newCommandTypeWithDelegates);
+                Dictionary<Type, List<Delegate>> newCommandTypeWithDelegates = new() { { commandType, newUserDelegates } };
+                AutoCheckoutListenerContainer.Add(user, newCommandTypeWithDelegates);
             }
         }
+        //添加进注销器
+        // public void AddToAutoCheckoutContainerImpl<T>(Type userType, Type commandType, InvokeCommandDelegate<T> del) where T : ICommand
+        // {
+        //     if (AutoCheckoutListenerContainer.TryGetValue(userType, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
+        //     {
+        //         if (commandTypeWithDelegates.TryGetValue(commandType, out List<Delegate> userDelegates))
+        //         {
+        //             userDelegates.Add(del);
+        //         }
+        //         else
+        //         {
+        //             List<Delegate> newUserDelegates = new List<Delegate>() {del};
+        //             commandTypeWithDelegates.Add(commandType, newUserDelegates);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         List<Delegate> newUserDelegates = new List<Delegate>() {del};
+        //         Dictionary<Type, List<Delegate>> newCommandTypeWithDelegates = new();
+        //         newCommandTypeWithDelegates.Add(commandType, newUserDelegates);
+        //         AutoCheckoutListenerContainer.Add(userType, newCommandTypeWithDelegates);
+        //     }
+        // }
         
         public void RemoveCommandListener<T>(InvokeCommandDelegate<T> del) where T : ICommand
         {
