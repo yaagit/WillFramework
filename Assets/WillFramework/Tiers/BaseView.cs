@@ -38,7 +38,7 @@ namespace WillFramework.Tiers
             IView view = instance as IView;
             if (view != null)
             {
-                Task initializeViewAsync = _context.InitializeViewAsync(view);
+                StartCoroutine(_context.InitializeGeneratedView(view));
             }
             return instance;
         }

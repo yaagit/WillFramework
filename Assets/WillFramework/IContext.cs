@@ -1,18 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
 using WillFramework.Containers;
 using WillFramework.Tiers;
 
 namespace WillFramework
 {
-    /// <summary>
-    /// </summary>
     public interface IContext
     {
         IocContainer IocContainer { get; }
         
         CommandContainer CommandContainer { get; }
         
-        Task InitializeViewAsync(IView view);
+        IEnumerator InitializeGeneratedView(IView view);
 
         void StartWithViews(params IView[] views);
     }

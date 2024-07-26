@@ -2,8 +2,6 @@
 
 namespace WillFramework.Reporter
 {
-    /// <summary>
-    /// </summary>
     public class ReportAction<T>
     {
         private Action<T> _action;

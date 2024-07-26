@@ -4,8 +4,6 @@ using WillFramework.Rules;
 
 namespace WillFramework.CommandManager.Extensions
 {
-    /// <summary>
-    /// </summary>
     public static class CanInvokeCommandExtension
     {
         public static void InvokeCommand(this ICanInvokeCommand self, ICommand command)

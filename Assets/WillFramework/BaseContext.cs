@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using UnityEngine;
 using WillFramework.Attributes;
 using WillFramework.Attributes.Injection;
@@ -15,8 +15,6 @@ using WillFramework.Initialize;
 
 namespace WillFramework
 {
-    /// <summary>
-    /// </summary>
     public class BaseContext<T> : IContext, IDisposable where T : BaseContext<T>
     {
         private bool _hasStarted = false; //防止重复启动
@@ -27,16 +25,14 @@ namespace WillFramework
         private CommandContainer _commandContainer = new CommandContainer();
         public CommandContainer CommandContainer { get => _commandContainer; }
         
-        public async Task InitializeViewAsync(IView view)
+        public IEnumerator InitializeGeneratedView(IView view)
         {
-            await Task.Run(() =>
-            {
-                view.SetContext(Instance);
-                IocContainer.Add(IdentityType.View, view);
-                PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(IdentityType.View);
-                InjectByPermission(view, permissions);
-                HandleAutoInitialize(view);
-            });
+            view.SetContext(Instance);
+            IocContainer.Add(IdentityType.View, view);
+            PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(IdentityType.View);
+            InjectByPermission(view, permissions);
+            HandleAutoInitialize(view);
+            yield return null;
         }
 
         #region 获取的实例在任何情况下都是单例的
@@ -283,7 +279,6 @@ namespace WillFramework
     }
     internal static class PermissionForIdentities
     {
-        // public static PermissionFlags Controller = PermissionFlags.InjectView | PermissionFlags.InjectService | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
         public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectCommandManager | PermissionFlags.InjectModel | PermissionFlags.InjectService;
         public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectModel;
         public static PermissionFlags Model = PermissionFlags._None;
@@ -293,8 +288,6 @@ namespace WillFramework
         {
             switch (identityType)
             {
-                // case IdentityType.Controller:
-                //     return Controller;
                 case IdentityType.View:
                     return View;
                 case IdentityType.Service:

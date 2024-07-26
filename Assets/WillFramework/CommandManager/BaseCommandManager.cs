@@ -2,8 +2,6 @@
 
 namespace WillFramework.CommandManager
 {
-    /// <summary>
-    /// </summary>
     public class BaseCommandManager : ICommandManager, ICanSetContext, ICanGetContext
     {
 
