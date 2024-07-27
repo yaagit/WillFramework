@@ -12,6 +12,6 @@ namespace WillFramework
         
         IEnumerator InitializeGeneratedView(IView view);
 
-        void StartWithViews(params IView[] views);
+        void StartWithViewsOnSceneLoading(params IView[] views);
     }
 }

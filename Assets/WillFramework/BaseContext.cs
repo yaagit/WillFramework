@@ -151,18 +151,7 @@ namespace WillFramework
             {
                 if (dic.TryGetValue(fieldType, out List<object> fieldInstanceList))
                 {
-                    if (fieldType.IsSubclassOf(typeof(BaseView)) && _hasStarted)
-                    {
-                        //运行时创建的 View
-                        // todo ----------- 
-                        Debug.Log("运行时创建的 View 正在设置其他 View 字段引用...");
-                        f.SetValue(instance, fieldInstanceList.First());
-                    }
-                    else
-                    {
-                        //这里的操作不涉及运行时创建的 View
-                        f.SetValue(instance, fieldInstanceList.First());
-                    }
+                    f.SetValue(instance, fieldInstanceList.First());
                 }
             }
         }
@@ -231,7 +220,7 @@ namespace WillFramework
         }
 
         //View 类通常需要继承 MonoBehaviour, 对象创建不受框架控制, 因此要从 Unity 获取作为启动参数传入
-        public void StartWithViews(params IView[] views)
+        private void StartWithViews(IView[] views)
         {
             if (!_hasStarted)
             {
@@ -254,9 +243,17 @@ namespace WillFramework
                 HandleIdentities();
                 Debug.Log($"-------------- Context 执行完毕, 用时: {(DateTime.Now - startTime).Milliseconds} ms --------------");
                 Debug.Log(_iocContainer);
+                Debug.Log(_commandContainer);
                 _hasStarted = true;
             }
         }
+
+        public void StartWithViewsOnSceneLoading(params IView[] views)
+        {
+            _hasStarted = false;
+            StartWithViews(views);
+        }
+
         public void Dispose()
         {
             _commandContainer?.Dispose();
@@ -279,8 +276,8 @@ namespace WillFramework
     }
     internal static class PermissionForIdentities
     {
-        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectCommandManager | PermissionFlags.InjectModel | PermissionFlags.InjectService;
-        public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectModel;
+        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectModel | PermissionFlags.InjectService;
+        public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
         public static PermissionFlags Model = PermissionFlags._None;
         public static PermissionFlags Identity = PermissionFlags._None;
 
