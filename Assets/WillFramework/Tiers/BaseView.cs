@@ -2,11 +2,12 @@
 using UnityEngine;
 using WillFramework.Attributes;
 using WillFramework.Attributes.Types;
+using WillFramework.Initialize;
 using WillFramework.Rules;
 
 namespace WillFramework.Tiers
 {
-    public class BaseView : MonoBehaviour, IView
+    public abstract class BaseView : MonoBehaviour, IView, IAutoInitialize
     {
         private IContext _context;
         
@@ -41,6 +42,13 @@ namespace WillFramework.Tiers
                 StartCoroutine(_context.InitializeGeneratedView(view));
             }
             return instance;
+        }
+
+        protected abstract void Initialize();
+        
+        void IAutoInitialize.AutoInitialize()
+        {
+            Initialize();
         }
     }
 }
