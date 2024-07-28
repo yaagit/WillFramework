@@ -10,7 +10,7 @@ namespace WillFramework
         
         CommandContainer CommandContainer { get; }
         
-        IEnumerator InitializeGeneratedView(IView view);
+        void PresetGeneratedView(IView view);
 
         void StartWithViewsOnSceneLoading(params IView[] views);
     }

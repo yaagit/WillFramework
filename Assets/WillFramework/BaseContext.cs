@@ -25,14 +25,13 @@ namespace WillFramework
         private CommandContainer _commandContainer = new CommandContainer();
         public CommandContainer CommandContainer { get => _commandContainer; }
         
-        public IEnumerator InitializeGeneratedView(IView view)
+        public void PresetGeneratedView(IView view)
         {
             view.SetContext(Instance);
             IocContainer.Add(IdentityType.View, view);
             PermissionFlags permissions = PermissionForIdentities.GetPermissionsByIdentityType(IdentityType.View);
             InjectByPermission(view, permissions);
             HandleAutoInitialize(view);
-            yield return null;
         }
 
         #region 获取的实例在任何情况下都是单例的
@@ -243,7 +242,6 @@ namespace WillFramework
                 HandleIdentities();
                 Debug.Log($"-------------- Context 执行完毕, 用时: {(DateTime.Now - startTime).Milliseconds} ms --------------");
                 Debug.Log(_iocContainer);
-                Debug.Log(_commandContainer);
                 _hasStarted = true;
             }
         }

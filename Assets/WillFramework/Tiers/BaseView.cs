@@ -7,7 +7,7 @@ using WillFramework.Rules;
 
 namespace WillFramework.Tiers
 {
-    public abstract class BaseView : MonoBehaviour, IView, IAutoInitialize
+    public abstract class BaseView : MonoBehaviour, IView
     {
         private IContext _context;
         
@@ -39,16 +39,9 @@ namespace WillFramework.Tiers
             IView view = instance as IView;
             if (view != null)
             {
-                StartCoroutine(_context.InitializeGeneratedView(view));
+                _context.PresetGeneratedView(view);
             }
             return instance;
-        }
-
-        protected abstract void Initialize();
-        
-        void IAutoInitialize.AutoInitialize()
-        {
-            Initialize();
         }
     }
 }
