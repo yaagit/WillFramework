@@ -6,7 +6,7 @@ using WillFramework.Initialize;
 
 namespace WillFramework.Containers
 {
-    public class CommandContainer : IDisposable, IInitialize
+    public class CommandContainer : IDisposable
     {
         public delegate void InvokeCommandDelegate<T>(T t) where T : ICommand;
         //相当于一个方法的声明,无实用意义
@@ -19,17 +19,8 @@ namespace WillFramework.Containers
         
         public Action<object> OnAutoCheckoutListenerAction;
 
-        private bool _wasInitialized = false;
         public CommandContainer()
         {
-            if (!_wasInitialized)
-            {
-                Initialize();
-            }
-        }
-        public void Initialize()
-        {
-
             OnAutoCheckoutListenerAction += OnAutoCheckout;
         }
         
@@ -200,7 +191,5 @@ namespace WillFramework.Containers
             _userCommandDelegatesLookup.Clear();
             _autoCheckoutListenerContainer.Clear();
         }
-
-        
     }
 }
