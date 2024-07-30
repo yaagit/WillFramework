@@ -8,7 +8,7 @@ namespace WillFramework.Containers
     // todo 考虑放弃对 View 的注册
     public class IocContainer : IDisposable
     {
-        private Dictionary<IdentityType, Dictionary<Type, List<object>>> _identityIoc;
+        private readonly Dictionary<IdentityType, Dictionary<Type, List<object>>> _identityIoc;
         
         public Dictionary<IdentityType, Dictionary<Type, List<object>>> IdentityIoc
         {

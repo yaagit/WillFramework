@@ -11,13 +11,13 @@ namespace WillFramework.Containers
         public delegate void InvokeCommandDelegate<T>(T t) where T : ICommand;
         //相当于一个方法的声明,无实用意义
         private delegate void InvokeCommandDelegate(ICommand e);
-        private Dictionary<Type, InvokeCommandDelegate> _commandDelegates = new();
+        private readonly Dictionary<Type, InvokeCommandDelegate> _commandDelegates = new();
         
-        private Dictionary<object, Dictionary<Delegate, InvokeCommandDelegate>> _userCommandDelegatesLookup = new();
+        private readonly Dictionary<object, Dictionary<Delegate, InvokeCommandDelegate>> _userCommandDelegatesLookup = new();
         //自动注销器
-        private Dictionary<object, Dictionary<Type, List<Delegate>>> _autoCheckoutListenerContainer = new();
+        private readonly Dictionary<object, Dictionary<Type, List<Delegate>>> _autoCheckoutListenerContainer = new();
         
-        public Action<object> OnAutoCheckoutListenerAction;
+        public readonly Action<object> OnAutoCheckoutListenerAction;
 
         public CommandContainer()
         {

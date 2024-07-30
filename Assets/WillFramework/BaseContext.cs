@@ -17,12 +17,13 @@ namespace WillFramework
 {
     public class BaseContext<T> : IContext, IDisposable where T : BaseContext<T>
     {
-        private bool _hasStarted = false; //防止重复启动
+        //防止重复启动
+        private bool _hasStarted = false; 
         //IOC 容器
-        private IocContainer _iocContainer = new IocContainer();
+        private readonly IocContainer _iocContainer = new IocContainer();
         public IocContainer IocContainer { get => _iocContainer;}
         //Command 容器
-        private CommandContainer _commandContainer = new CommandContainer();
+        private readonly CommandContainer _commandContainer = new CommandContainer();
         public CommandContainer CommandContainer { get => _commandContainer; }
         
         public void PresetGeneratedView(IView view)
