@@ -20,24 +20,16 @@ namespace WillFramework
             
         }
         
-        private IView[] ScanViewsInTheScene()
+        private BaseView[] ScanViewsInTheScene()
         {
-            MonoBehaviour[] scripts = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.InstanceID);
-            List<IView> viewList = new();
-            foreach (var s in scripts)
-            {
-                if (s is IView view)
-                {
-                    viewList.Add(view);
-                }
-            }
-
-            return viewList.ToArray();
+            //可以找到 inactive 状态的对象
+            BaseView[] views = Resources.FindObjectsOfTypeAll<BaseView>();
+            return views;
         }
 
         void OnActiveSceneChanged(Scene arg1, Scene arg2)
         {
-            IView[] views = ScanViewsInTheScene();
+            BaseView[] views = ScanViewsInTheScene();
             Context.CommandContainer.Dispose();
             Context.IocContainer.Dispose();
             Context.StartWithViewsOnSceneLoading(views);

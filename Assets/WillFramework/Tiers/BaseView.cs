@@ -33,9 +33,39 @@ namespace WillFramework.Tiers
             _context = context;
         }
 
+        protected T Instantiate<T>(T original, Transform parent) where T : Object
+        {
+            T instance = MonoBehaviour.Instantiate(original, parent);
+            IView view = instance as IView;
+            if (view != null)
+            {
+                _context.PresetGeneratedView(view);
+            }
+            return instance;
+        }
+        protected T Instantiate<T>(T original, Transform parent, bool instantiateInWorldSpace) where T : Object
+        {
+            T instance = MonoBehaviour.Instantiate(original, parent, instantiateInWorldSpace);
+            IView view = instance as IView;
+            if (view != null)
+            {
+                _context.PresetGeneratedView(view);
+            }
+            return instance;
+        }
         protected T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, position, rotation);
+            IView view = instance as IView;
+            if (view != null)
+            {
+                _context.PresetGeneratedView(view);
+            }
+            return instance;
+        }
+        protected T Instantiate<T>(T original, Vector3 position, Quaternion rotation, Transform parent) where T : Object
+        {
+            T instance = MonoBehaviour.Instantiate(original, position, rotation, parent);
             IView view = instance as IView;
             if (view != null)
             {
