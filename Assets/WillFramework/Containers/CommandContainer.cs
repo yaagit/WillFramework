@@ -17,14 +17,9 @@ namespace WillFramework.Containers
         //自动注销器
         private readonly Dictionary<object, Dictionary<Type, List<Delegate>>> _autoCheckoutListenerContainer = new();
         
-        public readonly Action<object> OnAutoCheckoutListenerAction;
-
-        public CommandContainer()
-        {
-            OnAutoCheckoutListenerAction += OnAutoCheckout;
-        }
+        public CommandContainer() {}
         
-        private void OnAutoCheckout(object user)
+        public void UnbindEvents(object user)
         {
             if (_autoCheckoutListenerContainer.TryGetValue(user, out Dictionary<Type, List<Delegate>> commandTypeWithDelegates))
             {

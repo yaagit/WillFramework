@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using UnityEngine;
-using WillFramework.Attributes;
+﻿using UnityEngine;
 using WillFramework.Attributes.Types;
-using WillFramework.Initialize;
+using WillFramework.Context;
 using WillFramework.Rules;
+using Object = UnityEngine.Object;
 
 namespace WillFramework.Tiers
 {
@@ -14,7 +13,7 @@ namespace WillFramework.Tiers
         void OnDestroy()
         {
             _context.IocContainer.Remove(IdentityType.View, this);
-            _context.CommandContainer.OnAutoCheckoutListenerAction.Invoke(this);
+            _context.CommandContainer.UnbindEvents(this);
             _OnDestroy();
         }
         //留给子类去实现
@@ -36,42 +35,44 @@ namespace WillFramework.Tiers
         protected T Instantiate<T>(T original, Transform parent) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, parent);
-            IView view = instance as IView;
-            if (view != null)
-            {
-                _context.PresetGeneratedView(view);
-            }
+            HandleInstantiated(instance);
             return instance;
         }
         protected T Instantiate<T>(T original, Transform parent, bool instantiateInWorldSpace) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, parent, instantiateInWorldSpace);
-            IView view = instance as IView;
-            if (view != null)
-            {
-                _context.PresetGeneratedView(view);
-            }
+            HandleInstantiated(instance);
             return instance;
         }
         protected T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, position, rotation);
-            IView view = instance as IView;
-            if (view != null)
-            {
-                _context.PresetGeneratedView(view);
-            }
+            HandleInstantiated(instance);
             return instance;
         }
         protected T Instantiate<T>(T original, Vector3 position, Quaternion rotation, Transform parent) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, position, rotation, parent);
+            HandleInstantiated(instance);
+            return instance;
+        }
+
+        private void HandleInstantiated<T>(T instance) where T : Object
+        {
             IView view = instance as IView;
             if (view != null)
             {
                 _context.PresetGeneratedView(view);
             }
-            return instance;
+            else
+            {
+                GameObject go = instance as GameObject;
+                view = go.GetComponent<IView>();
+                if (view != null)
+                {
+                    _context.PresetGeneratedView(view);
+                }
+            }
         }
     }
 }

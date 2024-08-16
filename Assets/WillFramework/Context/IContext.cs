@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using WillFramework.Containers;
+﻿using WillFramework.Containers;
 using WillFramework.Tiers;
 
-namespace WillFramework
+namespace WillFramework.Context
 {
     public interface IContext
     {
@@ -12,6 +11,6 @@ namespace WillFramework
         
         void PresetGeneratedView(IView view);
 
-        void StartWithViewsOnSceneLoading(params IView[] views);
+        void StartWithViewsOnSceneLoading(BaseApplication application, params IView[] views);
     }
 }

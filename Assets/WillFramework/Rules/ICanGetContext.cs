@@ -1,4 +1,6 @@
-﻿namespace WillFramework.Rules
+﻿using WillFramework.Context;
+
+namespace WillFramework.Rules
 {
     public interface ICanGetContext
     {

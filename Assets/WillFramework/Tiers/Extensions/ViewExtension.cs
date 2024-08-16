@@ -26,7 +26,7 @@ namespace WillFramework.Tiers.Extensions
         
         public static void ErrorWarning()
         {
-            Debug.LogError("检测到 Context 的引用为空,可能是你在 Monobehavior 的 Start / Awake 方法内调用了 CommandContainer 的方法.");
+            Debug.LogError("检测到 Context 的引用为空,可能是你在 Monobehavior 的 Awake 方法内调用了 CommandContainer 的方法.");
         }
     }
 }

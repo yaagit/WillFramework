@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,11 +8,11 @@ using WillFramework.Attributes.Injection;
 using WillFramework.Attributes.Types;
 using WillFramework.CommandManager;
 using WillFramework.Containers;
+using WillFramework.Initialize;
 using WillFramework.Rules;
 using WillFramework.Tiers;
-using WillFramework.Initialize;
 
-namespace WillFramework
+namespace WillFramework.Context
 {
     public class BaseContext<T> : IContext, IDisposable where T : BaseContext<T>
     {
@@ -220,7 +219,7 @@ namespace WillFramework
         }
 
         //View 类通常需要继承 MonoBehaviour, 对象创建不受框架控制, 因此要从 Unity 获取作为启动参数传入
-        private void StartWithViews(IView[] views)
+        private void StartWithViews(Assembly assembly, IView[] views)
         {
             if (!_hasStarted)
             {
@@ -235,10 +234,9 @@ namespace WillFramework
                     }
                 }
                 //扫描并添加进 IOC 容器
-                Assembly assembly = typeof(T).Assembly;
                 ScanIdentitiesByAssembly(assembly);
-                Assembly localAssembly = Assembly.GetAssembly(typeof(BaseContext<T>));
-                ScanIdentitiesByAssembly(localAssembly);
+                Assembly frameworkAssembly = Assembly.GetAssembly(typeof(T));
+                ScanIdentitiesByAssembly(frameworkAssembly);
                 //注入依赖 + 调用初始化
                 HandleIdentities();
                 Debug.Log($"-------------- Context 执行完毕, 用时: {(DateTime.Now - startTime).Milliseconds} ms --------------");
@@ -247,51 +245,17 @@ namespace WillFramework
             }
         }
 
-        public void StartWithViewsOnSceneLoading(params IView[] views)
+        public void StartWithViewsOnSceneLoading(BaseApplication application, params IView[] views)
         {
             _hasStarted = false;
-            StartWithViews(views);
+            Assembly assembly = application.GetType().Assembly; 
+            StartWithViews(assembly, views);
         }
 
         public void Dispose()
         {
             _commandContainer?.Dispose();
             _iocContainer?.Dispose();
-        }
-    }
-    [Flags]
-    public enum PermissionFlags : uint
-    {
-        _None = 0,
-        InjectView = 0b00000000000000000000000000000001,
-        InjectService = InjectView << 1,
-        InjectModel = InjectView << 2, 
-        InjectController = InjectView << 3,
-        #region CommandManager 细化
-        InjectHighLevelCommandManager = InjectView << 4,
-        InjectLowLevelCommandManager = InjectView << 5,
-        InjectCommandManager = InjectView << 6,
-        #endregion
-    }
-    internal static class PermissionForIdentities
-    {
-        public static PermissionFlags View = PermissionFlags._None | PermissionFlags.InjectModel | PermissionFlags.InjectService;
-        public static PermissionFlags Service = PermissionFlags._None | PermissionFlags.InjectModel | PermissionFlags.InjectHighLevelCommandManager;
-        public static PermissionFlags Model = PermissionFlags._None;
-        public static PermissionFlags Identity = PermissionFlags._None;
-
-        public static PermissionFlags GetPermissionsByIdentityType(IdentityType identityType)
-        {
-            switch (identityType)
-            {
-                case IdentityType.View:
-                    return View;
-                case IdentityType.Service:
-                    return Service;
-                case IdentityType.Model:
-                    return Model;
-            }
-            return Identity;
         }
     }
 }

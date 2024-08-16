@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using WillFramework.Context;
 using WillFramework.Tiers;
 
 namespace WillFramework
 {
-    public abstract class BaseApplication : MonoBehaviour
+    public class BaseApplication : MonoBehaviour
     {
-        protected abstract IContext Context { get; }
+        protected IContext Context { get => WillFramework.Context.Context.Instance; }
         
         void Awake()
         {
@@ -29,10 +29,10 @@ namespace WillFramework
 
         void OnActiveSceneChanged(Scene arg1, Scene arg2)
         {
-            BaseView[] views = ScanViewsInTheScene();
             Context.CommandContainer.Dispose();
             Context.IocContainer.Dispose();
-            Context.StartWithViewsOnSceneLoading(views);
+            BaseView[] views = ScanViewsInTheScene();
+            Context.StartWithViewsOnSceneLoading(this, views);
         }
 
         private void OnDestroy()
