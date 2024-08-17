@@ -1,4 +1,5 @@
-﻿using WillFramework.Containers;
+﻿using System.Reflection;
+using WillFramework.Containers;
 using WillFramework.Tiers;
 
 namespace WillFramework.Context
@@ -11,6 +12,6 @@ namespace WillFramework.Context
         
         void PresetGeneratedView(IView view);
 
-        void StartWithViewsOnSceneLoading(BaseApplication application, params IView[] views);
+        void StartWithViewsOnSceneLoading(Assembly localAssembly, params IView[] views);
     }
 }

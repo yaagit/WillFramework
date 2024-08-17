@@ -245,11 +245,10 @@ namespace WillFramework.Context
             }
         }
 
-        public void StartWithViewsOnSceneLoading(BaseApplication application, params IView[] views)
+        public void StartWithViewsOnSceneLoading(Assembly localAssembly, params IView[] views)
         {
             _hasStarted = false;
-            Assembly assembly = application.GetType().Assembly; 
-            StartWithViews(assembly, views);
+            StartWithViews(localAssembly, views);
         }
 
         public void Dispose()
