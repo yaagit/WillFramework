@@ -31,7 +31,12 @@ namespace WillFramework.Tiers
         {
             _context = context;
         }
-
+        protected T Instantiate<T>(T original) where T : Object
+        {
+            T instance = MonoBehaviour.Instantiate(original);
+            HandleInstantiated(instance);
+            return instance;
+        }
         protected T Instantiate<T>(T original, Transform parent) where T : Object
         {
             T instance = MonoBehaviour.Instantiate(original, parent);
