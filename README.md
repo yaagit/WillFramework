@@ -1,11 +1,11 @@
 # Will Framework
-<h1 style="color:red;font-size:64px;">Note: This version is outdated and no longer receives updates or maintenance. Please go to the following link: <a href="https://github.com/yaagit/WillFrameworkPro" target="_blank" style="color:red;">WillFrameworkPro</a></h1>
+<h1 style="color:red;font-size:64px;">This version is outdated and no longer receives updates or maintenance. Please go to the following link: <a href="https://github.com/yaagit/WillFrameworkPro" target="_blank" style="color:red;">WillFrameworkPro</a></h1>
 ### 简介
-~~这是一个用于 Unity 应用开发的 C# 语言类极简 MVC 架构 ── WillFramework。
+这是一个用于 Unity 应用开发的 C# 语言类极简 MVC 架构 ── WillFramework。
 WillFramework 体量小巧， 支持自动化的 IOC 单例注册、单例依赖注入以及注入权限管理，拥有各种拿来即用的 Attributes。
 WillFramework 拥有基于观察者模式的数据驱动事件系统、汇报事件系统和命令事件系统。
 WillFramework 支持启动时自动化执行的 Initialize 代码（需要继承 AutoInitialize 接口）。
-WillFramework 支持 View 层事件自动注销功能。~~
+WillFramework 支持 View 层事件自动注销功能。
 ### 角色关系
 ~~通常情况下，WillFramework 具有三个角色：View，Service，Model。三个角色通讯关系如下所示：~~
 
