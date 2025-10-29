@@ -1,5 +1,5 @@
 # Will Framework
-<h1 style="color:red;font-size:64px;">This framework is outdated and no longer receives updates or maintenance. Please go to the following link: <a href="https://github.com/yaagit/WillFrameworkPro" target="_blank" style="color:red;">WillFrameworkPro</a></h1>
+<h1 style="color:red;font-size:64px;">Attention：This framework is outdated and no longer receives updates or maintenance. Please go to the following link: <a href="https://github.com/yaagit/WillFrameworkPro" target="_blank" style="color:red;">WillFrameworkPro</a></h1>
 ### 简介
 这是一个用于 Unity 应用开发的 C# 语言类极简 MVC 架构 ── WillFramework。
 WillFramework 体量小巧， 支持自动化的 IOC 单例注册、单例依赖注入以及注入权限管理，拥有各种拿来即用的 Attributes。
